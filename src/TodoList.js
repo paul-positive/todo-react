@@ -1,13 +1,16 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import './App.css';
+import TodoFilters from './TodoFilters';
+import TodoItemsRemaining from './TodoItemsRemaining';
 
 function TodoList(props) {
-  const incompleteItems = props.todos.filter(todo => todo.isComplete === false);
+  const [filter, setFilter] = useState('all');
 
   return (
     <>
       <div className="border rounded shadow space-y-5 p-5">
-        {props.todos.map((todo, index) => (
+        {props.todosFiltered(filter).map((todo, index) => (
           <div className="relative flex items-start items-center" key={todo.id}>
             <div className="flex h-6 items-center">
               <input
@@ -62,32 +65,26 @@ function TodoList(props) {
       </div>
 
       <div className="relative flex justify-between">
-        <button className="bg-transparent hover:bg-blue-500 hover:text-white py-1 px-2 border border-gray-500 hover:border-transparent rounded text-xs text-gray-500">
+        <button
+          onClick={props.handleCompleteAll}
+          className="bg-transparent hover:bg-blue-500 hover:text-white py-1 px-2 border border-gray-500 hover:border-transparent rounded text-xs text-gray-500"
+        >
           Check All
         </button>
         <p className="text-gray-500">
-          {`${incompleteItems.length} ${
-            incompleteItems.length === 1 ? 'Item' : 'Items'
-          } remaining`}
+          <TodoItemsRemaining remaining={props.remaining} />
         </p>
       </div>
 
       <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-300" />
 
       <div className="relative flex justify-between">
-        <div className="inline-flex space-x-1">
-          <button className="bg-transparent hover:bg-blue-500 hover:text-white py-1 px-2 border border-gray-500 hover:border-transparent rounded text-xs text-gray-500">
-            All
-          </button>
-          <button className="bg-transparent hover:bg-blue-500 hover:text-white py-1 px-2 hover:border-transparent rounded text-xs text-gray-500">
-            Active
-          </button>
-          <button className="bg-transparent hover:bg-blue-500 hover:text-white py-1 px-2 hover:border-transparent rounded text-xs text-gray-500">
-            Completed
-          </button>
-        </div>
+        <TodoFilters filter={filter} onFilter={setFilter} />
 
-        <button className="bg-transparent hover:bg-blue-500 hover:text-white py-1 px-2 border border-gray-500 hover:border-transparent rounded text-xs text-gray-500">
+        <button
+          onClick={props.handleClearCompleted}
+          className="bg-transparent hover:bg-blue-500 hover:text-white py-1 px-2 border border-gray-500 hover:border-transparent rounded text-xs text-gray-500"
+        >
           Clear Completed
         </button>
       </div>
@@ -102,6 +99,10 @@ TodoList.propTypes = {
   handleEdit: PropTypes.func.isRequired,
   handleUpdate: PropTypes.func.isRequired,
   handleCancelEdit: PropTypes.func.isRequired,
+  handleClearCompleted: PropTypes.func.isRequired,
+  handleCompleteAll: PropTypes.func.isRequired,
+  todosFiltered: PropTypes.func.isRequired,
+  remaining: PropTypes.number.isRequired,
 };
 
 export default TodoList;
